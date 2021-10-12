@@ -1,0 +1,6 @@
+- create virtual environment
+- install packages from requirements.txt
+  - if pyaudio does not install a wheel file is supplied
+- navigate into src directory and execute main.py
+- press keys [z,x,c,v,b,n,m] to generate sound
+- signal is visualized with matplotlib
