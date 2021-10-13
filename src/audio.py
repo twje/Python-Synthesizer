@@ -40,6 +40,7 @@ class Audio:
                 stream_callback=self,
             )
             self.stream.start_stream()
+            self.buffer = [0] * self.chunk
 
         def __enter__(self):
             return self
@@ -51,27 +52,17 @@ class Audio:
 
         def __call__(self, *args, **kwgs):
             # runs in audio thread
-            frames = self.callback(
+            self.callback(
+                self.buffer,
                 args[1],
                 self.rate,
                 self.channels
             )
-            number_of_bytes = str(len(frames))
-            data = struct.pack(number_of_bytes + 'h', *frames)
+            number_of_bytes = str(len(self.buffer))
+            data = struct.pack(number_of_bytes + 'h', *self.buffer)
             self.data.put(data)
             status = pyaudio.paComplete if self.done == True else pyaudio.paContinue
             return (data, status)
-
-        def foo(self, c, notes):
-            # audio thread
-            mixed_output = 0
-            for note in notes:
-                mixed_output += self.bell.sound(note, c)
-                if note.is_finished():
-                    note.destroy()
-                    notes.remove(note)
-
-            return int(mixed_output * 1000)
 
         def is_active(self):
             return self.stream.is_active()

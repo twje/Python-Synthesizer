@@ -72,9 +72,9 @@ def create_processor():
 processor = create_processor()
 player = Player(processor.command_stream)
 
-visualizer = Visualizer(audio.chunk, audio.channels, scale=4)
+#visualizer = Visualizer(audio.chunk, audio.channels, scale=4)
 with audio.generate(player.on_tick) as stream:
     while stream.is_active():
         if not stream.empty():
             pass
-            visualizer.update(stream.get())
+            #visualizer.update(stream.get())

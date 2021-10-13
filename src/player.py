@@ -3,8 +3,8 @@ from note import Note
 
 
 class Player:
-    def __init__(self, command_stream):
-        self.command_stream = command_stream
+    def __init__(self, event_bus):
+        self.event_bus = event_bus
         self.notes = []
         self.actions = {
             "on_press": self.on_press,
@@ -13,18 +13,15 @@ class Player:
         self.time = 0
         self.bell = Bell()
 
-    def on_tick(self, frame_count, rate, channels):
+    def on_tick(self, buffer, frame_count, rate, channels):
         self.poll_commands(self.time)
 
         frames = []
         for index in range(frame_count):
-            a = frame_count / rate
-            b = a * index / frame_count
-            c = self.time + b
-            d = self.sound(c)
-            frames.extend([d] * channels)
+            tick = self.time + index/rate
+            buffer[index] = self.sound(tick)
 
-        self.time += a
+        self.time += frame_count/rate
         return frames
 
     def sound(self, tick):
@@ -42,9 +39,9 @@ class Player:
     # Helper Methods
     # --------------
     def poll_commands(self, time):
-        while not self.command_stream.empty():
+        while not self.event_bus.empty():
             self.process_command(
-                self.command_stream.get(),
+                self.event_bus.get(),
                 time
             )
 
