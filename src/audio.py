@@ -1,6 +1,7 @@
 from queue import Queue
 import pyaudio
 import struct
+from instrument import Bell
 
 
 class Audio:
@@ -27,6 +28,7 @@ class Audio:
             self.data = Queue()
             self.time = 0
             self.done = False
+            self.bell = Bell()
 
             self.audio = pyaudio.PyAudio()
             self.stream = self.audio.open(
@@ -48,26 +50,28 @@ class Audio:
             self.audio.terminate()
 
         def __call__(self, *args, **kwgs):
-            # runs in own thread and is managed by pyaudio
-            frame_count = args[1]
-
-            frames = []
-            for index in range(frame_count):
-                a = frame_count / self.rate
-                b = a * index / frame_count
-                c = self.time + b
-                d = int(self.callback(c))                
-                frames.extend([d] * self.channels)
-                # value = int(amplitude * math.sin(phase))
-                # data.extend([value] * CHANNELS)
-                # phase += 2*math.pi*frequency/RATE
-
-            self.time += a
+            # runs in audio thread
+            frames = self.callback(
+                args[1],
+                self.rate,
+                self.channels
+            )
             number_of_bytes = str(len(frames))
             data = struct.pack(number_of_bytes + 'h', *frames)
             self.data.put(data)
-            status = pyaudio.paComplete if self.done == True else pyaudio.paContinue            
+            status = pyaudio.paComplete if self.done == True else pyaudio.paContinue
             return (data, status)
+
+        def foo(self, c, notes):
+            # audio thread
+            mixed_output = 0
+            for note in notes:
+                mixed_output += self.bell.sound(note, c)
+                if note.is_finished():
+                    note.destroy()
+                    notes.remove(note)
+
+            return int(mixed_output * 1000)
 
         def is_active(self):
             return self.stream.is_active()
