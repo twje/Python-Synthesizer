@@ -10,38 +10,33 @@ class Player:
             "on_press": self.on_press,
             "on_release": self.on_release,
         }
+        self.time = 0
         self.bell = Bell()
 
-    def on_tick(self, time, frame_count, rate, channels):
-        print(time, frame_count, rate, channels)
-        # audio thread
-        self.poll_commands(time)
+    def on_tick(self, frame_count, rate, channels):
+        self.poll_commands(self.time)
 
         frames = []
         for index in range(frame_count):
             a = frame_count / rate
             b = a * index / frame_count
-            c = time + b
-            mixed_sound = 0
-            for note in self.notes:
-                mixed_sound += self.bell.sound(note, c)
-                if note.is_finished():
-                    note.destroy()
-                    self.notes.remove(note)
-            output = int(mixed_sound) * 2000
-            frames.extend([output] * channels)
+            c = self.time + b
+            d = self.sound(c)
+            frames.extend([d] * channels)
 
+        self.time += a
         return frames
 
-        # mixed_output = 0
-        # self.time = time
-        # for note in self.notes:
-        #     mixed_output += self.bell.sound(note, time)
-        #     if note.is_finished():
-        #         note.destroy()
-        #         self.notes.remove(note)
+    def sound(self, tick):
+        # audio thread
+        mixed_output = 0
+        for note in self.notes:
+            mixed_output += self.bell.sound(note, tick)
+            if note.is_finished():
+                note.destroy()
+                self.notes.remove(note)
 
-        # return mixed_output * 1000
+        return int(mixed_output * 1000)
 
     # --------------
     # Helper Methods
