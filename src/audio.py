@@ -28,7 +28,6 @@ class Audio:
             self.data = Queue()
             self.time = 0
             self.done = False
-            self.bell = Bell()
 
             self.audio = pyaudio.PyAudio()
             self.stream = self.audio.open(

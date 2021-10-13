@@ -14,6 +14,7 @@ class Player:
         self.bell = Bell()
 
     def on_tick(self, buffer, frame_count, rate, channels):
+        # runs in audio thread
         self.poll_commands(self.time)
 
         frames = []
@@ -25,7 +26,6 @@ class Player:
         return frames
 
     def sound(self, tick):
-        # audio thread
         mixed_output = 0
         for note in self.notes:
             mixed_output += self.bell.sound(note, tick)
