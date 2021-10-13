@@ -63,8 +63,7 @@ class Bell(Instrument):
         )
         return self.volume * amplitude * sound
 
-    def envelope_factory(self, time):
-        print(len(self.envelopes) + 1)
+    def envelope_factory(self, time):        
         return Envelope(
             time,
             attack_time=0.01,

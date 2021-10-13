@@ -1,3 +1,4 @@
+from queue import Queue
 from instrument import Bell
 from audio import Audio
 from visualizer import Visualizer
@@ -28,41 +29,24 @@ class Processor:
     ]
 
     def __init__(self):
+        self.command_stream = Queue()
         self.lock = Lock()
         self.time = 0
         self.notes = []
 
     def on_press(self, key):
         # input thread
-        with self.lock:
-            note = self.get_note(key)
-            if note is not None:
-                note.on_press(self.time)
+        note_id = self.key_to_note_id(key)
+        if note_id is not None:
+            self.command_stream.put({"on_press": note_id})
 
     def on_release(self, key):
         # input thread
-        with self.lock:
-            note = self.get_note(key)
-            if note is not None:
-                note.on_release(self.time)
+        note_id = self.key_to_note_id(key)
+        if note_id is not None:
+            self.command_stream.put({"on_release": note_id})
 
-    def on_tick(self, time):
-        # audio thread
-        mixed_output = 0
-        with self.lock:
-            self.time = time
-            for note in self.notes:
-                mixed_output += bell.sound(note, time)
-                if note.is_finished():
-                    note.destroy()
-                    self.notes.remove(note)
-
-        return mixed_output * 1000
-
-    # --------------
-    # Helper Methods
-    # --------------
-    def get_note(self, key):
+    def key_to_note_id(self, key):
         char = None
         try:
             if key.char in self.NOTE_IDS:
@@ -78,10 +62,61 @@ class Processor:
             if note.idz == note_id:
                 return note
 
-        note = Note(note_id)
-        self.notes.append(note)
+        return note_id
 
-        return note
+
+class Player:
+    def __init__(self, command_stream):
+        self.command_stream = command_stream
+        self.notes = []
+        self.actions = {
+            "on_press": self.on_press,
+            "on_release": self.on_release,
+        }
+
+    def on_tick(self, time):
+        self.poll_commands(time)
+
+        # audio thread
+        mixed_output = 0
+        self.time = time
+        for note in self.notes:
+            mixed_output += bell.sound(note, time)
+            if note.is_finished():
+                note.destroy()
+                self.notes.remove(note)
+
+        return mixed_output * 1000
+
+    # --------------
+    # Helper Methods
+    # --------------
+    def poll_commands(self, time):
+        while not self.command_stream.empty():
+            self.process_command(
+                self.command_stream.get(),
+                time
+            )
+
+    def process_command(self, command, time):
+        for action, note_id in command.items():
+            self.actions[action](note_id, time)
+
+    # ----------------
+    # Callback Methods
+    # ----------------
+    def on_press(self, note_id, time):
+        for note in self.notes:
+            if note.idz == note_id:
+                note.on_press(time)
+                break
+        else:
+            self.notes.append(Note(note_id))
+
+    def on_release(self, note_id, time):
+        for note in self.notes:
+            if note.idz == note_id:
+                note.on_release(time)
 
 
 def create_processor():
@@ -94,9 +129,11 @@ def create_processor():
     return processor
 
 
-visualizer = Visualizer(audio.chunk, audio.channels, scale=4)
 processor = create_processor()
-with audio.generate(processor.on_tick) as stream:
+player = Player(processor.command_stream)
+
+visualizer = Visualizer(audio.chunk, audio.channels, scale=4)
+with audio.generate(player.on_tick) as stream:
     while stream.is_active():
         if not stream.empty():
             pass
