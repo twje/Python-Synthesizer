@@ -1,5 +1,6 @@
 class Sustain:
     def __init__(self, envelope, start_time, is_released):
+        print("sustain")
         self.envelope = envelope
         self.start_time = start_time
         self.is_released = is_released

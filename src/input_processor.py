@@ -2,7 +2,7 @@ from queue import Queue
 from pynput import keyboard
 
 
-class Processor:
+class InputProcessor:
     NOTE_IDS = [
         "z",  # a
         "s",  # a sharp

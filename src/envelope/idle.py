@@ -1,5 +1,6 @@
 class Idle:
     def __init__(self, envelope):
+        print("idle")   
         self.envelope = envelope
         self.finished = False
 

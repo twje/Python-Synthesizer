@@ -2,24 +2,12 @@ import math
 
 
 class Note:
-    def __init__(self, idz):
+    def __init__(self, idz, envelope):
         self.idz = idz
-        self.instruments = set()
+        self.envelope = envelope
 
-    def is_finished(self):
-        return all(instrument.is_finished(self) for instrument in self.instruments)
-
-    def destroy(self):
-        for instrument in self.instruments:
-            instrument.remove_envelope(self)
-
-    def on_press(self, time):
-        for instrument in self.instruments:
-            instrument.on_press(self, time)
-
-    def on_release(self, time):
-        for instrument in self.instruments:
-            instrument.on_release(self, time)
+    def life_time(self, time):
+        return time - self.envelope.start_time
 
     @staticmethod
     def to_hurtz(note_id):

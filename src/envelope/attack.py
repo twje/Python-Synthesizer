@@ -1,5 +1,6 @@
 class Attack:
     def __init__(self, envelope, start_time):
+        print("attack")
         self.envelope = envelope
         self.start_time = start_time
         self.is_released = False

@@ -1,5 +1,6 @@
 class Release:
     def __init__(self, envelope, start_time):
+        print("release")   
         self.envelope = envelope
         self.start_time = start_time
         self.finished = False
@@ -16,7 +17,7 @@ class Release:
     def on_release(self, time):
         pass
 
-    def on_tick(self, time):
+    def on_tick(self, time):        
         life_time = time - self.start_time
         self.finished = life_time >= self.envelope.release_time
 

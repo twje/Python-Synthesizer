@@ -1,6 +1,7 @@
 
 class Decay:
-    def __init__(self, envelope, start_time, is_released):        
+    def __init__(self, envelope, start_time, is_released):     
+        print("decay")   
         self.envelope = envelope
         self.start_time = start_time
         self.is_released = is_released

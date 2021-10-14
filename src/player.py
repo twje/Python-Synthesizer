@@ -1,66 +1,23 @@
-from instrument import Bell
-from note import Note
+from collections import defaultdict
 
 
 class Player:
-    def __init__(self, event_bus):
-        self.event_bus = event_bus
-        self.notes = []
-        self.actions = {
-            "on_press": self.on_press,
-            "on_release": self.on_release,
-        }
-        self.time = 0
-        self.bell = Bell()
+    def __init__(self):
+        self.tracks = []
 
-    def on_tick(self, buffer, frame_count, rate, channels):
-        # runs in audio thread
-        self.poll_commands(self.time)
+    def tick(self, time):
+        composition = defaultdict(list)
+        for strategy in self.tracks:
+            instrument, notes = strategy.tick(time)
+            composition[instrument].extend(notes)
 
-        frames = []
-        for index in range(frame_count):
-            tick = self.time + index/rate
-            buffer[index] = self.sound(tick)
+        for instruemnt, notes in composition.items():
+            yield instruemnt, notes
 
-        self.time += frame_count/rate
-        return frames
-
-    def sound(self, tick):
-        mixed_output = 0
-        for note in self.notes:
-            mixed_output += self.bell.sound(note, tick)
-            if note.is_finished():
-                note.destroy()
-                self.notes.remove(note)
-
-        return int(mixed_output * 1000)
-
-    # --------------
-    # Helper Methods
-    # --------------
-    def poll_commands(self, time):
-        while not self.event_bus.empty():
-            self.process_command(
-                self.event_bus.get(),
-                time
-            )
-
-    def process_command(self, command, time):
-        for action, note_id in command.items():
-            self.actions[action](note_id, time)
-
-    # ----------------
-    # Callback Methods
-    # ----------------
     def on_press(self, note_id, time):
-        for note in self.notes:
-            if note.idz == note_id:
-                note.on_press(time)
-                break
-        else:
-            self.notes.append(Note(note_id))
+        for strategy in self.tracks:
+            strategy.on_press(note_id, time)
 
     def on_release(self, note_id, time):
-        for note in self.notes:
-            if note.idz == note_id:
-                note.on_release(time)
+        for strategy in self.tracks:
+            strategy.on_release(note_id, time)
