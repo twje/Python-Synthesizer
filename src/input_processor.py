@@ -21,7 +21,7 @@ class InputProcessor:
     def __init__(self, event_bus):
         self.event_bus = event_bus
         self.time = 0
-        self.notes = []
+        self.notes = set()
         self.listener = keyboard.Listener(
             on_press=self.on_press,
             on_release=self.on_release
@@ -34,12 +34,15 @@ class InputProcessor:
         # input thread
         note_id = self.key_to_note_id(key)
         if note_id is not None:
-            self.event_bus.put({"on_press": note_id})
+            if note_id not in self.notes:
+                self.notes.add(note_id)
+                self.event_bus.put({"on_press": note_id})
 
     def on_release(self, key):
         # input thread
         note_id = self.key_to_note_id(key)
         if note_id is not None:
+            self.notes.remove(note_id)
             self.event_bus.put({"on_release": note_id})
 
     def key_to_note_id(self, key):
@@ -53,9 +56,4 @@ class InputProcessor:
         if char not in self.NOTE_IDS:
             return
 
-        note_id = self.NOTE_IDS.index(char)
-        for note in self.notes:
-            if note.idz == note_id:
-                return note
-
-        return note_id
+        return self.NOTE_IDS.index(char)

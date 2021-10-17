@@ -1,5 +1,4 @@
 from player import Player
-from audio import Audio
 
 
 class AudioProcessor:
@@ -11,14 +10,9 @@ class AudioProcessor:
         }
         self.time = 0
         self.player = Player()
-        self.audio = None
 
     def add_track(self, track):
         self.player.tracks.append(track)
-
-    def start(self, channels, rate, chunk):
-        self.audio = Audio(channels, rate, chunk, self.on_tick)
-        return self.audio
 
     def on_tick(self, buffer, frame_count, rate, channels):
         # runs in audio thread
@@ -34,7 +28,10 @@ class AudioProcessor:
         mixed_output = 0
         for instrument, notes in self.player.tick(tick):
             for note in notes:
-                sound = instrument.sound(tick, note)
+                sound = instrument.sound(
+                    note.life_time(tick),
+                    note.idz
+                )
                 mixed_output += note.envelope.get_amplitude(tick) * sound
 
         return int(mixed_output * 2000)
