@@ -24,13 +24,11 @@ class AudioProcessor:
         # runs in audio thread
         self.poll_commands(self.time)
 
-        frames = []
         for index in range(frame_count):
             tick = self.time + index/rate
             buffer[index] = self.sound(tick)
 
         self.time += frame_count/rate
-        return frames
 
     def sound(self, tick):
         mixed_output = 0
