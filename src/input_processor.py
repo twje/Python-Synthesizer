@@ -18,8 +18,8 @@ class InputProcessor:
         "k",
     ]
 
-    def __init__(self, event_bus):
-        self.event_bus = event_bus
+    def __init__(self):
+        self.event_bus = Queue()
         self.time = 0
         self.notes = set()
         self.listener = keyboard.Listener(
