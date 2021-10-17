@@ -1,7 +1,7 @@
 
-from player import Player
+from visualizer_plugin import VisualizerPlugin
 from input_processor import InputProcessor
-from visualizer import Visualizer
+from player import Player
 from audio import Audio
 from piano import Piano
 
@@ -10,16 +10,16 @@ RATE = 44100
 CHUNK = 1024
 
 input_processor = InputProcessor()
+input_processor.start()
+
 player = Player(input_processor.event_bus)
 player.add_track(Piano())
 
-input_processor.start()
-
-visualizer = Visualizer(CHUNK, CHENNELS, scale=4)
 audio = Audio(CHENNELS, RATE, CHUNK, player)
+audio.plugins.append(VisualizerPlugin(CHUNK, CHENNELS, 4))
+
 with audio as stream:
     while stream.is_active():
-        if not stream.empty():
-            visualizer.update(stream.get())
+        stream.update_plugins()
 
 audio.stop()

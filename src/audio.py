@@ -1,4 +1,3 @@
-from queue import Queue
 import pyaudio
 import struct
 
@@ -7,15 +6,15 @@ class Audio:
     def __init__(self, channels, rate, chunk, player):
         self.channels = channels
         self.rate = rate
-        self.chunk = chunk        
+        self.chunk = chunk
         self.player = player
         self.amplitude = 2000
         self.time = 0
         self.is_done = False
-        self.data = Queue()                
         self.buffer = [0] * self.chunk
         self.audio = pyaudio.PyAudio()
         self.stream = None
+        self.plugins = []
 
     # ------------------------
     # Context Manager Protocol
@@ -57,7 +56,9 @@ class Audio:
     def serialize_data(self):
         number_of_bytes = str(len(self.buffer))
         data = struct.pack(number_of_bytes + 'h', *self.buffer)
-        self.data.put(data)
+        for plugin in self.plugins:
+            plugin.stream.put(data)
+
         status = pyaudio.paComplete if self.is_done == True else pyaudio.paContinue
         return (data, status)
 
@@ -70,8 +71,9 @@ class Audio:
     def is_active(self):
         return self.stream.is_active()
 
-    def empty(self):
-        return self.data.empty()
+    def update_plugins(self):
+        for plugin in self.plugins:
+            plugin.update()
 
-    def get(self):
-        return self.data.get()
+    def add_plugin(self, plugin):
+        self.plugins.append(plugin)
