@@ -28,11 +28,7 @@ class AudioProcessor:
         mixed_output = 0
         for instrument, notes in self.player.tick(tick):
             for note in notes:
-                sound = instrument.sound(
-                    note.life_time(tick),
-                    note.idz
-                )
-                mixed_output += note.envelope.get_amplitude(tick) * sound
+                mixed_output += instrument.sound(tick, note)
 
         return int(mixed_output * 2000)
 
