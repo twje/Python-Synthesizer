@@ -9,14 +9,33 @@ class Player:
             "on_release": self.on_release,
         }
         self.tracks = []
+        self.time = 0
+        self.amplitude = 2000
 
     def add_track(self, track):
         self.tracks.append(track)
 
-    def tick(self, time):
+    # --------------
+    # Helper Methods
+    # --------------
+    def on_tick(self, buffer, frame_count, rate):
+        self.poll_commands(self.time)
+
+        for index in range(frame_count):
+            tick = self.time + index/rate
+            buffer[index] = 0
+            for instrument, notes in self.update(tick):
+                for note in notes:
+                    buffer[index] += instrument.sound(tick, note)
+            buffer[index] = int(buffer[index] * self.amplitude)
+
+        self.time += frame_count/rate
+        return buffer
+
+    def update(self, time):
         composition = defaultdict(list)
-        for strategy in self.tracks:
-            instrument, notes = strategy.tick(time)
+        for track in self.tracks:
+            instrument, notes = track.tick(time)
             composition[instrument].extend(notes)
 
         for instruemnt, notes in composition.items():
@@ -29,9 +48,6 @@ class Player:
                 time
             )
 
-    # --------------
-    # Helper Methods
-    # --------------
     def process_command(self, command, time):
         for action, note_id in command.items():
             self.actions[action](note_id, time)

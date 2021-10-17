@@ -39,28 +39,25 @@ class Audio:
     # Heartbeat Methods
     # -----------------
     def on_tick(self, in_data, frame_count, time_info, status):
-        self.player.poll_commands(self.time)
-
-        for index in range(frame_count):
-            tick = self.time + index/self.rate
-            self.buffer[index] = 0
-            for instrument, notes in self.player.tick(tick):
-                for note in notes:
-                    self.buffer[index] += instrument.sound(tick, note)
-            self.buffer[index] = int(self.buffer[index] * self.amplitude)
-
-        self.time += frame_count/self.rate
-
-        return self.serialize_data()
-
-    def serialize_data(self):
-        number_of_bytes = str(len(self.buffer))
-        data = struct.pack(number_of_bytes + 'h', *self.buffer)
-        for plugin in self.plugins:
-            plugin.stream.put(data)
+        data = self.convert_data(
+            self.player.on_tick(
+                self.buffer,
+                self.chunk,
+                self.rate
+            )
+        )
+        self.prime_plugins(data)
 
         status = pyaudio.paComplete if self.is_done == True else pyaudio.paContinue
         return (data, status)
+
+    def convert_data(self, data):
+        number_of_bytes = str(len(data))
+        return struct.pack(number_of_bytes + 'h', *data)
+
+    def prime_plugins(self, data):
+        for plugin in self.plugins:
+            plugin.stream.put(data)
 
     # ----------
     # Public API
