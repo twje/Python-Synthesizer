@@ -8,8 +8,9 @@ class AudioProcessor:
             "on_press": self.on_press,
             "on_release": self.on_release,
         }
-        self.time = 0
         self.player = Player()
+        self.applitude = 2000
+        self.time = 0
 
     def add_track(self, track):
         self.player.tracks.append(track)
@@ -20,17 +21,13 @@ class AudioProcessor:
 
         for index in range(frame_count):
             tick = self.time + index/rate
-            buffer[index] = self.sound(tick)
+            buffer[index] = 0
+            for instrument, notes in self.player.tick(tick):
+                for note in notes:
+                    buffer[index] += instrument.sound(tick, note)
+            buffer[index] = int(buffer[index] * self.applitude)
 
         self.time += frame_count/rate
-
-    def sound(self, tick):
-        mixed_output = 0
-        for instrument, notes in self.player.tick(tick):
-            for note in notes:
-                mixed_output += instrument.sound(tick, note)
-
-        return int(mixed_output * 2000)
 
     # --------------
     # Helper Methods
