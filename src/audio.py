@@ -1,9 +1,11 @@
 import pyaudio
 import struct
+from plugin import Plugin
 
 
-class Audio:
+class Audio(Plugin):
     def __init__(self, channels, rate, chunk, player):
+        super().__init__()
         self.channels = channels
         self.rate = rate
         self.chunk = chunk
@@ -14,7 +16,6 @@ class Audio:
         self.buffer = [0] * self.chunk
         self.audio = pyaudio.PyAudio()
         self.stream = None
-        self.plugins = []
 
     # ------------------------
     # Context Manager Protocol
@@ -55,10 +56,6 @@ class Audio:
         number_of_bytes = str(len(data))
         return struct.pack(number_of_bytes + 'h', *data)
 
-    def prime_plugins(self, data):
-        for plugin in self.plugins:
-            plugin.stream.put(data)
-
     # ----------
     # Public API
     # ----------
@@ -67,10 +64,3 @@ class Audio:
 
     def is_active(self):
         return self.stream.is_active()
-
-    def update_plugins(self):
-        for plugin in self.plugins:
-            plugin.update()
-
-    def add_plugin(self, plugin):
-        self.plugins.append(plugin)

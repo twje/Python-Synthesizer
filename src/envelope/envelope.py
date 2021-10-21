@@ -4,7 +4,7 @@ from .attack import Attack
 from .decay import Decay
 from .sustain import Sustain
 from .release import Release
-from .idle import Idle
+
 
 class Envelope:
     class STATE_ID(Enum):
@@ -12,14 +12,12 @@ class Envelope:
         DECAY = auto()
         SUSTAIN = auto()
         RELEASE = auto()
-        IDLE = auto()
 
     states = {
         STATE_ID.ATTACK: Attack,
         STATE_ID.DECAY: Decay,
         STATE_ID.SUSTAIN: Sustain,
         STATE_ID.RELEASE: Release,
-        STATE_ID.IDLE: Idle,
     }
 
     def __init__(self, start_time, attack_time, start_amplitude, decay_time, sustain_amplitude, release_time):
