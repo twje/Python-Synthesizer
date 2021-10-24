@@ -46,3 +46,13 @@ class Envelope:
 
     def is_finished(self):
         return self.state.is_finished()
+
+    def copy(self, start_time):
+        return Envelope(
+            start_time,
+            self.attack_time,
+            self.start_amplitude,
+            self.decay_time,
+            self.sustain_amplitude,
+            self.release_time,
+        )

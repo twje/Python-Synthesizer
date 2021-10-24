@@ -1,0 +1,36 @@
+[
+    {
+        "name": "bell",
+        "volume": 1,
+        "sound": [
+            {
+                "note_offset": 12,
+                "scale": 1,
+                "lfo_hertz": 5,
+                "lfo_amplitude": 0.001,
+                "osc": "sine"
+            },
+            {
+                "note_offset": 24,
+                "scale": 0.5,
+                "lfo_hertz": 0,
+                "lfo_amplitude": 0,
+                "osc": "sine"
+            },
+            {
+                "note_offset": 36,
+                "scale": 0.25,
+                "lfo_hertz": 0,
+                "lfo_amplitude": 0,
+                "osc": "sine"
+            }
+        ],
+        "envelope": {
+            "attack_time": 0.01,
+            "start_amplitude": 1,
+            "decay_time": 0.01,
+            "sustain_amplitude": 0.3,
+            "release_time": 0.1
+        }
+    }
+]
