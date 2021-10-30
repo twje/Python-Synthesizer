@@ -27,7 +27,7 @@ def load_instruments(filepath):
         instrument = Instrument(
             name,
             instrument_def["volume"],
-            Envelope(0, **instrument_def["envelope"]),
+            Envelope(**instrument_def["envelope"]),
         )
 
         for osc in load_oscillations(instrument_def["sound"]):

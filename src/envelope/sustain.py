@@ -1,16 +1,15 @@
 class Sustain:
-    def __init__(self, envelope, start_time, is_released):
+    def __init__(self, envelope, is_released):
         print("sustain")
         self.envelope = envelope
-        self.start_time = start_time
         self.is_released = is_released
 
-    def on_press(self, time):
+    def on_press(self, life_time):
         pass
 
-    def on_release(self, time):
+    def on_release(self, life_time):
         if self.envelope.sustain_amplitude > 0:
-            self.set_release_state(time)
+            self.set_release_state(life_time)
 
     def on_tick(self, time):
         if self.envelope.sustain_amplitude > 0 and self.is_released:

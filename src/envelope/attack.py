@@ -11,18 +11,18 @@ class Attack:
     def on_release(self, time):
         self.is_released = True
 
-    def on_tick(self, time):
-        life_time = time - self.start_time
-        if life_time >= self.envelope.attack_time:
+    def on_tick(self, life_time):
+        elapsed_time = life_time - self.start_time        
+        if elapsed_time >= self.envelope.attack_time:
             self.envelope.set_state(
                 self.envelope.STATE_ID.DECAY,
-                self.start_time + self.envelope.attack_time,
+                life_time,
                 self.is_released
             )
 
-    def get_amplitude(self, time):
-        life_time = time - self.start_time
-        return (life_time / self.envelope.attack_time) * self.envelope.start_amplitude
+    def get_amplitude(self, life_time):
+        elapsed_time = life_time - self.start_time
+        return (elapsed_time / self.envelope.attack_time) * self.envelope.start_amplitude
 
     def is_finished(self):
         return False

@@ -12,8 +12,8 @@ class Piano:
     def tick(self, time):
         self.playing.clear()
         for note in self.notes:
-            note.envelope.on_tick(time)
-            if note.envelope.is_finished():
+            note.on_tick(time)
+            if note.is_finished():
                 self.delete.append(note)
             else:
                 self.playing.append(note)
@@ -27,7 +27,7 @@ class Piano:
     def on_press(self, index, time):
         for note in self.notes:
             if note.index == index:
-                note.envelope.on_press(time)
+                note.on_press(time)
                 break
         else:
             note = Note(index, self.bell, time)
@@ -36,4 +36,4 @@ class Piano:
     def on_release(self, index, time):
         for note in self.notes:
             if note.index == index:
-                note.envelope.on_release(time)
+                note.on_release(time)

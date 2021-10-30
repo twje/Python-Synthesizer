@@ -30,5 +30,5 @@ class Instrument:
 
         return self.volume * sound
 
-    def envelope_factory(self, time):
-        return self.envelope.copy(time)
+    def envelope_factory(self):
+        return self.envelope.copy()
