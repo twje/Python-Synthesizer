@@ -1,5 +1,86 @@
 [
     {
+        "name": "drumkick",
+        "volume": 1,
+        "sound": [
+            {
+                "note_offset": -36,
+                "scale": 0.99,
+                "lfo_hertz": 1,
+                "lfo_amplitude": 1,
+                "osc": "sine"
+            },
+            {
+                "note_offset": 0,
+                "scale": 0.01,
+                "lfo_hertz": 0,
+                "lfo_amplitude": 0,
+                "osc": "noise"
+            }
+        ],
+        "envelope": {
+            "attack_time": 0.01,
+            "start_amplitude": 1,
+            "decay_time": 0.15,
+            "sustain_amplitude": 0.0,
+            "release_time": 0
+        }
+    },
+    {
+        "name": "drumsnare",
+        "volume": 1,
+        "sound": [
+            {
+                "note_offset": -24,
+                "scale": 0.5,
+                "lfo_hertz": 0.5,
+                "lfo_amplitude": 1,
+                "osc": "sine"
+            },
+            {
+                "note_offset": 0,
+                "scale": 0.5,
+                "lfo_hertz": 0,
+                "lfo_amplitude": 0,
+                "osc": "noise"
+            }
+        ],
+        "envelope": {
+            "attack_time": 0,
+            "start_amplitude": 1,
+            "decay_time": 0.2,
+            "sustain_amplitude": 0.0,
+            "release_time": 0
+        }
+    },
+    {
+        "name": "drumhihat",
+        "volume": 1,
+        "sound": [
+            {
+                "note_offset": -12,
+                "scale": 0.1,
+                "lfo_hertz": 1.5,
+                "lfo_amplitude": 1,
+                "osc": "square"
+            },
+            {
+                "note_offset": 0,
+                "scale": 0.9,
+                "lfo_hertz": 0,
+                "lfo_amplitude": 0,
+                "osc": "noise"
+            }
+        ],
+        "envelope": {
+            "attack_time": 0.01,
+            "start_amplitude": 1,
+            "decay_time": 0.05,
+            "sustain_amplitude": 0.0,
+            "release_time": 0
+        }
+    },
+    {
         "name": "bell",
         "volume": 1,
         "sound": [
