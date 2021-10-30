@@ -31,8 +31,23 @@ class Envelope:
     def set_state(self, state_id, *args):
         self.state = self.states[state_id](self, *args)
 
+    def on_press(self, life_time):
+        self.state.on_press(life_time)
+
+    def on_release(self, life_time):
+        self.state.on_release(life_time)
+
+    def on_tick(self, life_time):
+        self.state.on_tick(life_time)
+
+    def is_finished(self):
+        return self.state.is_finished()
+
+    def get_amplitude(self, life_time):
+        return self.state.get_amplitude(life_time)
+
     def copy(self):
-        return Envelope(            
+        return Envelope(
             self.attack_time,
             self.start_amplitude,
             self.decay_time,
