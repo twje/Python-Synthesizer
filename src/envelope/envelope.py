@@ -46,6 +46,9 @@ class Envelope:
     def get_amplitude(self, life_time):
         return self.state.get_amplitude(life_time)
 
+    def duration(self):
+        return self.attack_time + self.decay_time + self.release_time
+
     def copy(self):
         return Envelope(
             self.attack_time,
