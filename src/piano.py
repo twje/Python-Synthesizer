@@ -22,18 +22,18 @@ class Piano:
             self.notes.remove(note)
         self.delete.clear()
 
-        return self.bell, self.playing
+        return self.playing
 
-    def on_press(self, note_id, time):
+    def on_press(self, index, time):
         for note in self.notes:
-            if note.idz == note_id:
+            if note.index == index:
                 note.envelope.on_press(time)
                 break
         else:
-            note = Note(note_id, self.bell.envelope_factory(time))
+            note = Note(index, self.bell, time)
             self.notes.append(note)
 
-    def on_release(self, note_id, time):
+    def on_release(self, index, time):
         for note in self.notes:
-            if note.idz == note_id:
+            if note.index == index:
                 note.envelope.on_release(time)

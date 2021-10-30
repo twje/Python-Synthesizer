@@ -1,14 +1,14 @@
-import math
 
 
 class Note:
-    def __init__(self, idz, envelope):
-        self.idz = idz
-        self.envelope = envelope
+    def __init__(self, index, instrument, start_time):
+        self.index = index
+        self.instrument = instrument
+        self.envelope = self.instrument.envelope_factory(start_time)
 
-    def life_time(self, time):
-        return time - self.envelope.start_time
+    def play(self, time):
+        life_time = time - self.envelope.start_time
+        return self.instrument.sound(life_time, self.index) * self.amplitude(time)
 
-    @staticmethod
-    def to_hurtz(note_id):
-        return 256 * math.pow(1.0594630943592952645618252949463, note_id)
+    def amplitude(self, time):
+        return self.envelope.get_amplitude(time)

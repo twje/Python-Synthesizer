@@ -10,7 +10,7 @@ class Player:
         }
         self.tracks = []
         self.time = 0
-        self.amplitude = 2000
+        self.amplitude = 4000
 
     def add_track(self, track):
         self.tracks.append(track)
@@ -24,22 +24,13 @@ class Player:
         for index in range(frame_count):
             tick = self.time + index/rate
             buffer[index] = 0
-            for instrument, notes in self.update(tick):
-                for note in notes:
-                    buffer[index] += instrument.sound(tick, note)
+            for track in self.tracks:
+                for note in track.tick(tick):
+                    buffer[index] += note.play(tick)
             buffer[index] = int(buffer[index] * self.amplitude)
 
         self.time += frame_count/rate
         return buffer
-
-    def update(self, time):
-        composition = defaultdict(list)
-        for track in self.tracks:
-            instrument, notes = track.tick(time)
-            composition[instrument].extend(notes)
-
-        for instruemnt, notes in composition.items():
-            yield instruemnt, notes
 
     def poll_commands(self, time):
         while not self.event_bus.empty():
