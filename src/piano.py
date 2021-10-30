@@ -1,10 +1,9 @@
-from instrument import Bell
 from note import Note
 
 
 class Piano:
-    def __init__(self):
-        self.bell = Bell()
+    def __init__(self, instrument):        
+        self.instrument = instrument
         self.notes = []
         self.delete = []
         self.playing = []
@@ -30,7 +29,7 @@ class Piano:
                 note.on_press(time)
                 break
         else:
-            note = Note(index, self.bell, time)
+            note = Note(index, self.instrument, time)
             self.notes.append(note)
 
     def on_release(self, index, time):

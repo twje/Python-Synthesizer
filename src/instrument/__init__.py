@@ -36,9 +36,3 @@ def load_instruments(filepath):
         instruments[name] = instrument
 
     return instruments
-
-
-instrument = load_instruments(
-    "../def.json")
-
-Bell = instrument["bell"]
